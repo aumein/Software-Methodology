@@ -14,12 +14,16 @@ public class Main extends Application {
         loader.setController(new Controller());
 
         Parent root = loader.load();
+
+        Controller controller = loader.getController();
+        controller.initialize();
+        
         primaryStage.setTitle("Songlib");
-        primaryStage.setScene(new Scene(root, 400, 300));
+        primaryStage.setScene(new Scene(root, 600, 450));
         primaryStage.show();
     }
 
-    
+
 
     public static void main(String[] args) {
         launch(args);
