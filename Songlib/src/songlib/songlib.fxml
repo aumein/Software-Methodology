@@ -9,15 +9,42 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
 <SplitPane dividerPositions="0.4991638795986622" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="303.0">
          <children>
-            <TabPane prefHeight="398.0" prefWidth="313.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id = "mainTab" prefHeight="398.0" prefWidth="313.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Current Song" />
+                <Tab text="Current Song">
+                     <content>
+                        <Pane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="titleLabel" alignment="TOP_CENTER" layoutX="25.0" layoutY="57.0" prefHeight="65.0" prefWidth="263.0" text="Title">
+                                 <font>
+                                    <Font size="48.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="yearLabel" alignment="CENTER" layoutX="193.0" layoutY="245.0" prefHeight="34.0" prefWidth="69.0" text="Year">
+                                 <font>
+                                    <Font size="28.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="albumLabel" alignment="CENTER" layoutX="14.0" layoutY="245.0" prefHeight="34.0" prefWidth="165.0" text="Album">
+                                 <font>
+                                    <Font size="28.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="artistLabel" alignment="CENTER" layoutX="79.0" layoutY="122.0" prefHeight="17.0" prefWidth="155.0" text="Artist">
+                                 <font>
+                                    <Font size="32.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                     </content></Tab>
                 <Tab text="Add">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -36,8 +63,7 @@
                               <TextField fx:id="album" layoutX="108.0" layoutY="170.0" promptText="(Optional)" />
                               <TextField fx:id="year" layoutX="108.0" layoutY="212.0" promptText="(Optional)" />
                               <Label layoutX="50.0" layoutY="217.0" text="Year" />
-                            <Button fx:id="save" layoutX="119.0" layoutY="280.0" minWidth="66.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="76.0" text="Save"
-                            onAction="#save" />
+                            <Button fx:id="save" layoutX="119.0" layoutY="280.0" minWidth="66.0" mnemonicParsing="false" onAction="#save" prefHeight="26.0" prefWidth="76.0" text="Save" />
                            </children>
                         </AnchorPane>
                   </content>
@@ -47,7 +73,7 @@
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="284.0">
          <children>
-            <ListView fx:id="songList" layoutX="21.0" layoutY="17.0" prefHeight="365.0" prefWidth="257.0" />
+            <ListView fx:id="songList" layoutX="21.0" layoutY="17.0" onMouseClicked="#handleSelect" prefHeight="365.0" prefWidth="257.0" />
          </children></AnchorPane>
   </items>
 </SplitPane>
