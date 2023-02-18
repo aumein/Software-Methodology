@@ -10,8 +10,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 
 public class Controller {
 
@@ -39,6 +39,7 @@ public class Controller {
 
     // read songs from json and load into arraylist
     public void initialize() throws IOException, ParseException {
+        createJson();
         load();
 
         songList.getSelectionModel().select(0);
@@ -84,8 +85,9 @@ public class Controller {
         String artistP = artist.getText();
 
         String albumP = album.getText();
-        int yearP = Integer.parseInt(year.getText());
+        String yearP = year.getText();
 
+        writeToSongDataJSON(artistP, songNameP, albumP, yearP);
         songList.getItems().add(songNameP + " - " + artistP);
 
         System.out.println(yearP + " " + songNameP + " " + artistP + " " + albumP);
@@ -106,37 +108,59 @@ public class Controller {
         System.out.println("I am a test");
     }
 
-    // call when checking to see if song not already in list, if so then pop out saying song is on the list shows up
+    // call when checking to see if song is already in list, if so then display pop oup saying song is already on the list
     boolean isInSongList(String song, String artist) {
         return false;
     }
 
-    void readJSON(){
-        JSONParser jsonparser = new JSONParser();
+    void createJson() throws IOException {
+        File songDataFile = new File(".\\songdata.json");
+        boolean isNewFile = songDataFile.createNewFile();
+
+        if(isNewFile) {
+            JSONObject json = new JSONObject();
+
+            try {
+                json.put("songs", List.of());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
+                out.write(json.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
-    
-    void createJson() {
-        
+
+    void writeToSongDataJSON(String song, String artist, String album, String year) {
+//        ObjectMapper mapper = new ObjectMapper();
     }
     void load() throws IOException, ParseException {
-        JSONParser jsonparser = new JSONParser();
-        FileReader reader = new FileReader(".\\songdata.json");
-        Object obj = jsonparser.parse(reader);
+        try {
+            JSONParser jsonparser = new JSONParser();
+            FileReader reader = new FileReader(".\\songdata.json");
+            Object obj = jsonparser.parse(reader);
 
-        JSONObject songjsonobj = (JSONObject) obj;
-        JSONArray jArray = (JSONArray) songjsonobj.get("songs");
+            JSONObject songjsonobj = (JSONObject) obj;
+            JSONArray jArray = (JSONArray) songjsonobj.get("songs");
 
-        obsList = FXCollections.observableArrayList();
-        if(jArray != null) {
-            for (int i = 0; i < jArray.size(); i++) {
-                JSONObject songs = (JSONObject) jArray.get(i);
-                String song = (String) songs.get("song");
-                String artist = (String) songs.get("artist");
-                String album = (String) songs.get("album");
-                String year = (String) songs.get("year");
+            obsList = FXCollections.observableArrayList();
+            if (jArray != null) {
+                for (int i = 0; i < jArray.size(); i++) {
+                    JSONObject songs = (JSONObject) jArray.get(i);
+                    String song = (String) songs.get("song");
+                    String artist = (String) songs.get("artist");
+                    String album = (String) songs.get("album");
+                    String year = (String) songs.get("year");
 
-                obsList.add(song + " - " + artist);
+                    obsList.add(song + " - " + artist);
+                }
             }
+        }catch(Exception e) {
+            System.out.println("File not created properly");
         }
 
 
