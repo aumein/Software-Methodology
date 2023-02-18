@@ -1,0 +1,22 @@
+{
+    "songs": [
+        {
+            "song": "Master of Puppets",
+            "artist": "Metallica",
+            "album": "Master of Puppets",
+            "year": "1986"
+        },
+        {
+            "song": "The Drapery Falls",
+            "artist": "Opeth",
+            "album": "Blackwater Park",
+            "year": "2001"
+        },
+        {
+            "song": "The Art of Dying",
+            "artist": "Gojira",
+            "album": "The Way of All Flesh",
+            "year": "2008"
+        }
+    ]   
+}
