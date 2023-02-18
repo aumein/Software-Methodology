@@ -36,8 +36,6 @@ public class Controller {
     /*
      * (1) make obsList read from json
      */
-
-    // read songs from json and load into arraylist
     public void initialize() throws IOException, ParseException {
         createJson();
         load();
@@ -69,14 +67,7 @@ public class Controller {
      * (1) saves to a json
      * (2) album and year should be optional
      */
-
-    // steps:
-    // 1: save text into variables
-    // 2: build one big string with stringbuilder separating each column with ','
-    // 3: put that string into an array list
-    // 4: sort array list alphabetically by song and find position of new item in array list
-    // index of array list element = index it will be in songList pushing old songs up an index
-    // 5: store new string into json file
+    
     public void save(ActionEvent e) throws IOException, ParseException {
         Button b = (Button)e.getSource();
         if (b!=save){return;}
@@ -151,15 +142,14 @@ public class Controller {
 
         arr.add(newSong);
         JSONArray newArray = arr;
-        JSONObject newJson = (JSONObject) songjsonobj.put("songs", newArray);
+        System.out.println(newArray);
+        System.out.println(songjsonobj);
 
-//        String newJsonStr = newJson.toString();
-
-//        try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
-//            out.write(newJsonStr);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
+            out.write(songjsonobj.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
     void load() throws IOException, ParseException {
@@ -189,52 +179,5 @@ public class Controller {
 
 
         songList.setItems(obsList);
-    }
-}
-
-class Song {
-
-    private String song;
-    private String artist;
-    private String album;
-    private String year;
-
-    Song(String song, String artist, String album, String year) {
-        this.song = song;
-        this.artist = artist;
-        this.album = album;
-        this.year = year;
-    }
-
-    public String getSong() {
-        return song;
-    }
-
-    public void setSong(String song) {
-        this.song = song;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getAlbum() {
-        return album;
-    }
-
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
     }
 }
