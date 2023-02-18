@@ -1,35 +1,27 @@
 package songlib;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ListView;
-import javafx.event.ActionEvent;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import org.json.simple.JSONObject;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import javafx.collections.FXCollections;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
 
 public class Controller {
 
     @FXML Button save;
     @FXML Button delete;
     @FXML Button edit;
-    @FXML TextField songName; 
-    @FXML TextField artist; 
+    @FXML TextField songName;
+    @FXML TextField artist;
     @FXML TextField album;
-    @FXML TextField year; 
+    @FXML TextField year;
 
     @FXML Label titleLabel;
     @FXML Label artistLabel;
@@ -45,29 +37,9 @@ public class Controller {
      * (1) make obsList read from json
      */
 
-     // read songs from json and load into arraylist
+    // read songs from json and load into arraylist
     public void initialize() throws IOException, ParseException {
-        JSONParser jsonparser = new JSONParser();
-        FileReader reader = new FileReader(".\\songdata.json");
-        Object obj = jsonparser.parse(reader);
-
-        JSONObject songjsonobj = (JSONObject) obj;
-        JSONArray jArray = (JSONArray) songjsonobj.get("song");
-
-        obsList = FXCollections.observableArrayList();
-
-        for (int i = 0; i<jArray.size(); i++) {
-            JSONObject songs = (JSONObject) jArray.get(i);
-            String song = (String) songs.get("song");
-            String artist = (String) songs.get("artist");
-            String album = (String) songs.get("album");
-            String year = (String) songs.get("year");
-
-            obsList.add(song + " - " + artist);
-        }
-        
-        
-        songList.setItems(obsList);
+        load();
 
         songList.getSelectionModel().select(0);
     }
@@ -97,12 +69,12 @@ public class Controller {
      * (2) album and year should be optional
      */
 
-     // steps:
-     // 1: save text into variables
-     // 2: build one big string with stringbuilder separating each column with ','
-     // 3: put that string into an array list
-     // 4: sort array list alphabetically by song and find position of new item in array list
-                // index of array list element = index it will be in songList pushing old songs up an index
+    // steps:
+    // 1: save text into variables
+    // 2: build one big string with stringbuilder separating each column with ','
+    // 3: put that string into an array list
+    // 4: sort array list alphabetically by song and find position of new item in array list
+    // index of array list element = index it will be in songList pushing old songs up an index
     // 5: store new string into json file
     public void save(ActionEvent e){
         Button b = (Button)e.getSource();
@@ -111,7 +83,7 @@ public class Controller {
         String songNameP = songName.getText();
         String artistP = artist.getText();
 
-        String albumP = album.getText(); 
+        String albumP = album.getText();
         int yearP = Integer.parseInt(year.getText());
 
         songList.getItems().add(songNameP + " - " + artistP);
@@ -141,5 +113,33 @@ public class Controller {
 
     void readJSON(){
         JSONParser jsonparser = new JSONParser();
+    }
+    
+    void createJson() {
+        
+    }
+    void load() throws IOException, ParseException {
+        JSONParser jsonparser = new JSONParser();
+        FileReader reader = new FileReader(".\\songdata.json");
+        Object obj = jsonparser.parse(reader);
+
+        JSONObject songjsonobj = (JSONObject) obj;
+        JSONArray jArray = (JSONArray) songjsonobj.get("songs");
+
+        obsList = FXCollections.observableArrayList();
+        if(jArray != null) {
+            for (int i = 0; i < jArray.size(); i++) {
+                JSONObject songs = (JSONObject) jArray.get(i);
+                String song = (String) songs.get("song");
+                String artist = (String) songs.get("artist");
+                String album = (String) songs.get("album");
+                String year = (String) songs.get("year");
+
+                obsList.add(song + " - " + artist);
+            }
+        }
+
+
+        songList.setItems(obsList);
     }
 }
