@@ -53,18 +53,35 @@ public class Controller {
      * (2) print data onto the current song data
      * (3) CURRENTLY only works if title + artist are available. FIX THIS
      */
-    public void handleSelect(){
+    public void handleSelect() throws IOException, ParseException {
+        fillCurrentSongText();
+
+        mainTab.getSelectionModel().select(0);
+    }
+
+    void fillCurrentSongText() throws IOException, ParseException {
         String s = songList.getSelectionModel().getSelectedItem();
         System.out.println(s);
         String[] params = s.split(" - ");
-        String title = params[0];
-        String name = params[1];
+        String song = params[0];
+        String artist = params[1];
 
-        //get year and album if available
-        titleLabel.setText(title);
-        artistLabel.setText(name);
+        JSONParser jsonparser = new JSONParser();
+        FileReader reader = new FileReader(".\\songdata.json");
+        Object obj = jsonparser.parse(reader);
 
-        mainTab.getSelectionModel().select(0);
+        JSONObject songjsonobj = (JSONObject) obj;
+        JSONArray arr = (JSONArray) songjsonobj.get("songs");
+
+        for(int i = 0; i < arr.size(); i++) {
+            JSONObject songObj = (JSONObject) arr.get(i);
+            if(song.equals((String) songObj.get("song")) && artist.equals(songObj.get("artist"))){
+                titleLabel.setText(song);
+                artistLabel.setText(artist);
+                yearLabel.setText((String) songObj.get("year"));
+                albumLabel.setText((String) songObj.get("album"));
+            }
+        }
     }
 
     /*
@@ -96,15 +113,10 @@ public class Controller {
 
         writeToSongDataJSON(songNameP, artistP, albumP, yearP);
         sortListView();
-        songList.getSelectionModel().select(songNameP + " - " + artistP);
-        titleLabel.setText(songNameP);
-        artistLabel.setText(artistP);
-        yearLabel.setText(yearP);
-        albumLabel.setText(albumP);
-
-        System.out.println(yearP + " " + songNameP + " " + artistP + " " + albumP);
-
-        mainTab.getSelectionModel().select(0);
+        songName.setText(null);
+        artist.setText(null);
+        album.setText(null);
+        year.setText(null);
     }
 
     public void delete(ActionEvent e) throws IOException, ParseException {
@@ -189,9 +201,9 @@ public class Controller {
                     artist.equalsIgnoreCase((String) songObj.get("artist"))){
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Song Already Exists");
-                alert.setContentText("Please enter a new Song");
+                alert.setContentText("Song is in list already! Please enter a new Song!");
                 alert.show();
-                break;
+                return;
             }
         }
 
@@ -211,6 +223,14 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        songList.getSelectionModel().select(song + " - " + artist);
+        titleLabel.setText(song);
+        artistLabel.setText(artist);
+        yearLabel.setText(year);
+        albumLabel.setText(album);
+
+        mainTab.getSelectionModel().select(0);
 
     }
 
