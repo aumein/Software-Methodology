@@ -96,23 +96,56 @@ public class Controller {
 
         writeToSongDataJSON(songNameP, artistP, albumP, yearP);
         sortListView();
+        songList.getSelectionModel().select(songNameP + " - " + artistP);
+        titleLabel.setText(songNameP);
+        artistLabel.setText(artistP);
+        yearLabel.setText(yearP);
+        albumLabel.setText(albumP);
 
         System.out.println(yearP + " " + songNameP + " " + artistP + " " + albumP);
 
         mainTab.getSelectionModel().select(0);
     }
 
-    public void delete(ActionEvent e){
-        test();
+    public void delete(ActionEvent e) throws IOException, ParseException {
+        String s = songList.getSelectionModel().getSelectedItem();
+        System.out.println(s);
+        String[] params = s.split(" - ");
+        String song = params[0];
+        String artist = params[1];
+        System.out.println("delete " + song + " " + artist);
+        deleteFromJSON(song, artist);
+    }
+
+    void deleteFromJSON(String songToDelete, String artistOfSong) throws IOException, ParseException {
+        JSONParser jsonparser = new JSONParser();
+        FileReader reader = new FileReader(".\\songdata.json");
+        Object obj = jsonparser.parse(reader);
+
+        JSONObject songjsonobj = (JSONObject) obj;
+        JSONArray arr = (JSONArray) songjsonobj.get("songs");
+
+        for(int i = 0; i < arr.size(); i++) {
+            JSONObject song = (JSONObject) arr.get(i);
+            if (songToDelete.equalsIgnoreCase((String) song.get("song")) && artistOfSong.equalsIgnoreCase((String) song.get("artist"))){
+                arr.remove(i);
+                break;
+            }
+        }
+
+//        ((JSONArray) songjsonobj.get("songs")).clear();
+        songjsonobj.put("songs", arr);
+
+        try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
+            out.write(songjsonobj.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sortListView();
     }
 
     public void edit(ActionEvent e) {
 
-    }
-
-    // delete this when finished just using for debugging purposes
-    void test() {
-        System.out.println("I am a test");
     }
 
     // call when checking to see if song is already in list, if so then display pop oup saying song is already on the list
@@ -149,6 +182,18 @@ public class Controller {
 
         JSONObject songjsonobj = (JSONObject) obj;
         JSONArray arr = (JSONArray) songjsonobj.get("songs");
+
+        for(int i = 0; i < arr.size(); i++) {
+            JSONObject songObj = (JSONObject) arr.get(i);
+            if(song.equalsIgnoreCase((String) songObj.get("song")) &&
+                    artist.equalsIgnoreCase((String) songObj.get("artist"))){
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Song Already Exists");
+                alert.setContentText("Please enter a new Song");
+                alert.show();
+                break;
+            }
+        }
 
         JSONObject newSong = new JSONObject();
         newSong.put("song", song);
