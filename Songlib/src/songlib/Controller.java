@@ -11,6 +11,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Controller {
@@ -32,6 +34,8 @@ public class Controller {
 
     @FXML ListView<String> songList;
     ObservableList<String> obsList;
+    ArrayList<String> songsArrayList;
+    ArrayList<String> artistArrayList;
 
     /*
      * (1) make obsList read from json
@@ -39,6 +43,7 @@ public class Controller {
     public void initialize() throws IOException, ParseException {
         createJson();
         load();
+//        sortListView();
 
         songList.getSelectionModel().select(0);
     }
@@ -67,10 +72,12 @@ public class Controller {
      * (1) saves to a json
      * (2) album and year should be optional
      */
-    
+
     public void save(ActionEvent e) throws IOException, ParseException {
         Button b = (Button)e.getSource();
         if (b!=save){return;}
+
+
 
         String songNameP = songName.getText();
         String artistP = artist.getText();
@@ -78,8 +85,17 @@ public class Controller {
         String albumP = album.getText();
         String yearP = year.getText();
 
-        writeToSongDataJSON(artistP, songNameP, albumP, yearP);
-        songList.getItems().add(songNameP + " - " + artistP);
+        if(songNameP == "" || artistP == "") {
+            System.out.println("empty");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Artist/Song Fields Missing");
+            alert.setContentText("Please enter an Artist and a Song");
+            alert.show();
+            return;
+        }
+
+        writeToSongDataJSON(songNameP, artistP, albumP, yearP);
+        sortListView();
 
         System.out.println(yearP + " " + songNameP + " " + artistP + " " + albumP);
 
@@ -152,6 +168,45 @@ public class Controller {
         }
 
     }
+
+    void sortListView() throws IOException, ParseException {
+        songList.getItems().clear();
+        songsArrayList = new ArrayList<>();
+        artistArrayList = new ArrayList<>();
+        obsList.clear();
+
+        JSONParser jsonparser = new JSONParser();
+        FileReader reader = new FileReader(".\\songdata.json");
+        Object obj = jsonparser.parse(reader);
+
+        JSONObject songsobj = (JSONObject) obj;
+
+        JSONArray array = (JSONArray) songsobj.get("songs");
+
+        for(int i = 0; i < array.size(); i++) {
+            JSONObject song = (JSONObject) array.get(i);
+            songsArrayList.add((String) song.get("song"));
+            artistArrayList.add((String) song.get("artist"));
+        }
+
+        Collections.sort(songsArrayList);
+        Collections.sort(artistArrayList);
+
+        for(int i = 0; i < songsArrayList.size(); i++) {
+            for(int j = 0; j < songsArrayList.size(); j++) {
+                JSONObject song = (JSONObject) array.get(j);
+                System.out.println(songsArrayList.get(i) + " == " + song.get("song") + ", " + artistArrayList.get(j) + " == " + song.get("artist"));
+                if(songsArrayList.get(i).equalsIgnoreCase((String) song.get("song")) && !obsList.contains(songsArrayList.get(i) + " - " + song.get("artist"))){
+                    songList.getItems().add(songsArrayList.get(i) + " - " + song.get("artist"));
+                    obsList.add(songsArrayList.get(i) + " - " + song.get("artist"));
+                    System.out.println("songs and artist check out");
+                    break;
+                }
+            }
+
+        }
+
+    }
     void load() throws IOException, ParseException {
         try {
             JSONParser jsonparser = new JSONParser();
@@ -169,15 +224,12 @@ public class Controller {
                     String artist = (String) songs.get("artist");
                     String album = (String) songs.get("album");
                     String year = (String) songs.get("year");
-
-                    obsList.add(song + " - " + artist);
                 }
             }
         }catch(Exception e) {
             System.out.println("File not created properly");
         }
 
-
-        songList.setItems(obsList);
+        sortListView();
     }
 }
