@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Main extends Application {
+public class SongLib extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -19,7 +19,7 @@ public class Main extends Application {
         controller.initialize();
         
         primaryStage.setTitle("Songlib");
-        primaryStage.setScene(new Scene(root, 600, 450));
+        primaryStage.setScene(new Scene(root, 900, 400));
         primaryStage.show();
     }
 
