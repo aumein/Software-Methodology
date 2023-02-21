@@ -47,6 +47,7 @@ public class Controller {
         sortListView();
 
         songList.getSelectionModel().select(0);
+        handleSelect();
     }
 
     public void handleSelect() throws IOException, ParseException {
