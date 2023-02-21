@@ -16,7 +16,7 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="303.0">
          <children>
-            <TabPane fx:id = "mainTab" prefHeight="398.0" prefWidth="313.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="mainTab" prefHeight="398.0" prefWidth="313.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab text="Current Song">
                      <content>
@@ -27,7 +27,7 @@
                                     <Font size="48.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="yearLabel" alignment="CENTER" layoutX="193.0" layoutY="245.0" prefHeight="34.0" prefWidth="69.0" text="Year">
+                              <Label fx:id="yearLabel" alignment="CENTER" layoutX="175.0" layoutY="245.0" prefHeight="34.0" prefWidth="117.0" text="Year">
                                  <font>
                                     <Font size="28.0" />
                                  </font>
@@ -42,6 +42,7 @@
                                     <Font size="32.0" />
                                  </font>
                               </Label>
+                              <Button fx:id="delete" layoutX="130.0" layoutY="302.0" mnemonicParsing="false" onAction="#delete" text="Delete" />
                            </children>
                         </Pane>
                      </content></Tab>
@@ -63,11 +64,34 @@
                               <TextField fx:id="album" layoutX="108.0" layoutY="170.0" promptText="(Optional)" />
                               <TextField fx:id="year" layoutX="108.0" layoutY="212.0" promptText="(Optional)" />
                               <Label layoutX="50.0" layoutY="217.0" text="Year" />
-                            <Button fx:id="save" layoutX="119.0" layoutY="280.0" minWidth="66.0" mnemonicParsing="false" onAction="#save" prefHeight="26.0" prefWidth="76.0" text="Save" />
+                            <Button fx:id="save" layoutX="188.0" layoutY="280.0" minWidth="66.0" mnemonicParsing="false" onAction="#save" prefHeight="26.0" prefWidth="76.0" text="Save" />
                            </children>
                         </AnchorPane>
                   </content>
                 </Tab>
+                  <Tab text="Edit">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <ButtonBar layoutX="106.0" layoutY="306.0" prefHeight="40.0" prefWidth="88.0" />
+                              <TextField fx:id="songNameEdit" layoutX="108.0" layoutY="78.0" />
+                              <Label layoutX="32.0" layoutY="83.0" prefHeight="17.0" prefWidth="61.0" text="Song Title" />
+                              <Label layoutX="46.0" layoutY="127.0" prefHeight="17.0" prefWidth="33.0" text="Artist" />
+                              <TextField fx:id="artistEdit" layoutX="108.0" layoutY="123.0" />
+                              <Label layoutX="103.0" layoutY="33.0" text="Edit Current Song">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Label layoutX="45.0" layoutY="175.0" text="Album" />
+                              <TextField fx:id="albumEdit" layoutX="108.0" layoutY="170.0" promptText="(Optional)" />
+                              <TextField fx:id="yearEdit" layoutX="108.0" layoutY="212.0" promptText="(Optional)" />
+                              <Label layoutX="50.0" layoutY="217.0" text="Year" />
+                              <Button fx:id="edit" layoutX="188.0" layoutY="280.0" minWidth="66.0" mnemonicParsing="false" onAction="#edit" prefHeight="26.0" prefWidth="76.0" text="Edit" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
               </tabs>
             </TabPane>
          </children></AnchorPane>

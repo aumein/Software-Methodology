@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class Controller {
-
     @FXML Button save;
     @FXML Button delete;
     @FXML Button edit;
@@ -24,6 +23,11 @@ public class Controller {
     @FXML TextField artist;
     @FXML TextField album;
     @FXML TextField year;
+
+    @FXML TextField songNameEdit;
+    @FXML TextField artistEdit;
+    @FXML TextField albumEdit;
+    @FXML TextField yearEdit;
 
     @FXML Label titleLabel;
     @FXML Label artistLabel;
@@ -37,31 +41,24 @@ public class Controller {
     ArrayList<String> songsArrayList;
     ArrayList<String> artistArrayList;
 
-    /*
-     * (1) make obsList read from json
-     */
     public void initialize() throws IOException, ParseException {
         createJson();
         load();
-//        sortListView();
+        sortListView();
 
         songList.getSelectionModel().select(0);
     }
 
-    /*
-     * (1) take s and search json file for rest of data
-     * (2) print data onto the current song data
-     * (3) CURRENTLY only works if title + artist are available. FIX THIS
-     */
     public void handleSelect() throws IOException, ParseException {
+        if(songList.getItems().size() == 0){
+            emptyTable();
+            return;
+        }
         fillCurrentSongText();
-
-        mainTab.getSelectionModel().select(0);
     }
 
     void fillCurrentSongText() throws IOException, ParseException {
         String s = songList.getSelectionModel().getSelectedItem();
-        System.out.println(s);
         String[] params = s.split(" - ");
         String song = params[0];
         String artist = params[1];
@@ -80,21 +77,17 @@ public class Controller {
                 artistLabel.setText(artist);
                 yearLabel.setText((String) songObj.get("year"));
                 albumLabel.setText((String) songObj.get("album"));
+                songNameEdit.setText(song);
+                artistEdit.setText(artist);
+                yearEdit.setText((String) songObj.get("year"));
+                albumEdit.setText((String) songObj.get("album"));
             }
         }
     }
 
-    /*
-     * saves whatever is in text fields to list. NEEDS STILL:
-     * (1) saves to a json
-     * (2) album and year should be optional
-     */
-
     public void save(ActionEvent e) throws IOException, ParseException {
         Button b = (Button)e.getSource();
         if (b!=save){return;}
-
-
 
         String songNameP = songName.getText();
         String artistP = artist.getText();
@@ -102,8 +95,7 @@ public class Controller {
         String albumP = album.getText();
         String yearP = year.getText();
 
-        if(songNameP == "" || artistP == "") {
-            System.out.println("empty");
+        if(songNameP.equals("") || artistP.equals("")) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Artist/Song Fields Missing");
             alert.setContentText("Please enter an Artist and a Song");
@@ -119,14 +111,34 @@ public class Controller {
         year.setText(null);
     }
 
-    public void delete(ActionEvent e) throws IOException, ParseException {
+    public void delete() throws IOException, ParseException {
+        if(songList.getItems().size() == 0){
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No items in Song List");
+            alert.setContentText("No items to be deleted");
+            alert.show();
+            return;
+        }
+        int curr = songList.getSelectionModel().getSelectedIndex();
+        int last = songList.getItems().size()-1;
+
         String s = songList.getSelectionModel().getSelectedItem();
-        System.out.println(s);
+        //System.out.println(s);
         String[] params = s.split(" - ");
         String song = params[0];
-        String artist = params[1];
-        System.out.println("delete " + song + " " + artist);
-        deleteFromJSON(song, artist);
+        String artists = params[1];
+        //System.out.println("delete " + song + " " + artist);
+        deleteFromJSON(song, artists);
+        if(curr == 0){
+            emptyTable();
+            return;
+        }
+        if(curr == last){
+            songList.getSelectionModel().select(curr-1);
+        }
+        else{
+            songList.getSelectionModel().select(curr);
+        }
     }
 
     void deleteFromJSON(String songToDelete, String artistOfSong) throws IOException, ParseException {
@@ -145,7 +157,6 @@ public class Controller {
             }
         }
 
-//        ((JSONArray) songjsonobj.get("songs")).clear();
         songjsonobj.put("songs", arr);
 
         try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
@@ -156,9 +167,31 @@ public class Controller {
         sortListView();
     }
 
-    public void edit(ActionEvent e) {
+    public void edit() {
+        int curr = songList.getSelectionModel().getSelectedIndex();
+        String songNameP = songNameEdit.getText();
+        String artistP = artistEdit.getText();
 
-    }
+        String albumP = albumEdit.getText();
+        String yearP = yearEdit.getText();
+
+        if(songNameP.equals("") || artistP.equals("")) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Artist/Song Fields Missing");
+            alert.setContentText("Please enter an Artist and a Song");
+            alert.show();
+            return;
+        }
+        try{
+            delete();
+            writeToSongDataJSON(songNameP, artistP, albumP, yearP);
+            sortListView();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        songList.getSelectionModel().select(curr);
+    }   
 
     // call when checking to see if song is already in list, if so then display pop oup saying song is already on the list
     boolean isInSongList(String song, String artist) {
@@ -184,7 +217,6 @@ public class Controller {
                 e.printStackTrace();
             }
         }
-
     }
 
     void writeToSongDataJSON(String song, String artist, String album, String year) throws IOException, ParseException {
@@ -215,8 +247,8 @@ public class Controller {
 
         arr.add(newSong);
         JSONArray newArray = arr;
-        System.out.println(newArray);
-        System.out.println(songjsonobj);
+        //System.out.println(newArray);
+        //System.out.println(songjsonobj);
 
         try (PrintWriter out = new PrintWriter(new FileWriter(".\\songdata.json"))) {
             out.write(songjsonobj.toString());
@@ -229,8 +261,6 @@ public class Controller {
         artistLabel.setText(artist);
         yearLabel.setText(year);
         albumLabel.setText(album);
-
-        mainTab.getSelectionModel().select(0);
 
     }
 
@@ -260,11 +290,11 @@ public class Controller {
         for(int i = 0; i < songsArrayList.size(); i++) {
             for(int j = 0; j < songsArrayList.size(); j++) {
                 JSONObject song = (JSONObject) array.get(j);
-                System.out.println(songsArrayList.get(i) + " == " + song.get("song") + ", " + artistArrayList.get(j) + " == " + song.get("artist"));
+                //System.out.println(songsArrayList.get(i) + " == " + song.get("song") + ", " + artistArrayList.get(j) + " == " + song.get("artist"));
                 if(songsArrayList.get(i).equalsIgnoreCase((String) song.get("song")) && !obsList.contains(songsArrayList.get(i) + " - " + song.get("artist"))){
                     songList.getItems().add(songsArrayList.get(i) + " - " + song.get("artist"));
                     obsList.add(songsArrayList.get(i) + " - " + song.get("artist"));
-                    System.out.println("songs and artist check out");
+                    //System.out.println("songs and artist check out");
                     break;
                 }
             }
@@ -292,9 +322,20 @@ public class Controller {
                 }
             }
         }catch(Exception e) {
-            System.out.println("File not created properly");
+            //System.out.println("File not created properly");
         }
 
         sortListView();
+    }
+    
+    public void emptyTable(){
+        titleLabel.setText("Untitled");
+        artistLabel.setText("No Artist");
+        albumLabel.setText("No Album");
+        yearLabel.setText("No Year");
+        songNameEdit.setText("");
+        artistEdit.setText("");
+        albumEdit.setText("");
+        yearEdit.setText("");
     }
 }
