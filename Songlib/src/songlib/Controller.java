@@ -1,7 +1,3 @@
-/*
- * Authors: Joshua Redona, 
- */
-
 package songlib;
 
 import javafx.collections.FXCollections;
@@ -195,7 +191,11 @@ public class Controller {
             e.printStackTrace();
         }
         songList.getSelectionModel().select(curr);
-    }   
+        songNameEdit.setText(null);
+        artistEdit.setText(null);
+        yearEdit.setText(null);
+        albumEdit.setText(null);
+    }
 
     // call when checking to see if song is already in list, if so then display pop oup saying song is already on the list
     boolean isInSongList(String song, String artist) {
@@ -331,7 +331,7 @@ public class Controller {
 
         sortListView();
     }
-    
+
     public void emptyTable(){
         titleLabel.setText("Untitled");
         artistLabel.setText("No Artist");

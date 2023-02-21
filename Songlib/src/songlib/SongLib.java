@@ -1,7 +1,3 @@
-/*
- * Authors: Joshua Redona, 
- */
-
 package songlib;
 
 import javafx.application.Application;
