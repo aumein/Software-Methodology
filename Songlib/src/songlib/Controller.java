@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Controller {
@@ -110,6 +111,8 @@ public class Controller {
         artist.setText(null);
         album.setText(null);
         year.setText(null);
+
+        mainTab.getSelectionModel().select(0);
     }
 
     public void delete() throws IOException, ParseException {
@@ -130,15 +133,20 @@ public class Controller {
         String artists = params[1];
         //System.out.println("delete " + song + " " + artist);
         deleteFromJSON(song, artists);
-        if(curr == 0){
+        System.out.println(curr);
+        if(songList.getItems().size() == 0){
             emptyTable();
             return;
         }
         if(curr == last){
+            System.out.println(curr);
             songList.getSelectionModel().select(curr-1);
+            handleSelect();
         }
         else{
+            System.out.println(curr);
             songList.getSelectionModel().select(curr);
+            handleSelect();
         }
     }
 
@@ -196,11 +204,6 @@ public class Controller {
         artistEdit.setText(null);
         yearEdit.setText(null);
         albumEdit.setText(null);
-    }
-
-    // call when checking to see if song is already in list, if so then display pop oup saying song is already on the list
-    boolean isInSongList(String song, String artist) {
-        return false;
     }
 
     void createJson() throws IOException {
@@ -282,8 +285,37 @@ public class Controller {
         JSONObject songsobj = (JSONObject) obj;
 
         JSONArray array = (JSONArray) songsobj.get("songs");
+        List list = new ArrayList();
+        for(int i = 0; i < array.size(); i++){
+            list.add(array.get(i));
+        }
 
+        Collections.sort(list, new Comparator<JSONObject>() {
+
+            private static final String KEY = "artist";
+            @Override
+            public int compare(JSONObject a, JSONObject b) {
+                String str1 = new String();
+                String str2 = new String();
+
+                try {
+                    str1 = (String)a.get(KEY);
+                    str2 = (String)b.get(KEY);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+                return str1.compareTo(str2);
+            }
+        });
+
+        JSONArray sortArr = new JSONArray();
         for(int i = 0; i < array.size(); i++) {
+            sortArr.add(list.get(i));
+        }
+        System.out.println(list);
+
+
+        for(int i = 0; i < sortArr.size(); i++) {
             JSONObject song = (JSONObject) array.get(i);
             songsArrayList.add((String) song.get("song"));
             artistArrayList.add((String) song.get("artist"));
@@ -292,9 +324,12 @@ public class Controller {
         Collections.sort(songsArrayList);
         Collections.sort(artistArrayList);
 
+
         for(int i = 0; i < songsArrayList.size(); i++) {
+            System.out.println("Song: " + songsArrayList.get(i));
             for(int j = 0; j < songsArrayList.size(); j++) {
-                JSONObject song = (JSONObject) array.get(j);
+                JSONObject song = (JSONObject) sortArr.get(j);
+                System.out.println("Artist: " + artistArrayList.get(j));
                 //System.out.println(songsArrayList.get(i) + " == " + song.get("song") + ", " + artistArrayList.get(j) + " == " + song.get("artist"));
                 if(songsArrayList.get(i).equalsIgnoreCase((String) song.get("song")) && !obsList.contains(songsArrayList.get(i) + " - " + song.get("artist"))){
                     songList.getItems().add(songsArrayList.get(i) + " - " + song.get("artist"));
@@ -307,6 +342,7 @@ public class Controller {
         }
 
     }
+
     void load() throws IOException, ParseException {
         try {
             JSONParser jsonparser = new JSONParser();
